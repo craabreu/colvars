@@ -975,6 +975,10 @@ public:
   /// Temporary static pointer to unique proxy object
   static colvarproxy *proxy_static;
 
+  /// Number of live module objects; the static feature arrays are shared by
+  /// all of them and deleted with the last one
+  static int num_instances;
+
   /// \brief Access the main instance of the Colvars module
   static colvarmodule *main();
 

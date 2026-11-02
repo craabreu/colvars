@@ -8,6 +8,7 @@ foreach(CMD
     memory_stream
     read_xyz_traj
     parse_error
+    multiple_modules
   )
   add_executable(${CMD} ${CMD}.cpp)
   target_link_libraries(${CMD} PRIVATE colvars)

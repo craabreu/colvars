@@ -123,6 +123,7 @@ colvarmodule::colvarmodule(colvarproxy *proxy_in)
 
   proxy = proxy_in; // Pointer to the proxy object
   proxy_static = proxy_in; // Temporary - assume single proxy & module objects
+  num_instances++;
 
   parse = new colvarparse(this); // Parsing object for global options
   version_int = proxy->get_version_from_string(COLVARS_VERSION);
@@ -1466,11 +1467,13 @@ colvarmodule::~colvarmodule()
 
     reset();
 
-    // Delete contents of static arrays
-    colvarbias::delete_features();
-    colvar::delete_features();
-    colvar::cvc::delete_features();
-    atom_group::delete_features();
+    // Delete contents of static arrays, which other modules may still use
+    if (--num_instances == 0) {
+      colvarbias::delete_features();
+      colvar::delete_features();
+      colvar::cvc::delete_features();
+      atom_group::delete_features();
+    }
 
     delete
       reinterpret_cast<std::map<std::string, int> *>(num_biases_types_used_);
@@ -2811,5 +2814,7 @@ std::string colvarmodule::usage::report(int flag)
 
 // Static pointer to the proxy object
 colvarproxy *colvarmodule::proxy_static = nullptr;
+
+int colvarmodule::num_instances = 0;
 
 cvm::real colvarmodule::debug_gradients_step_size = 1.0e-07;
